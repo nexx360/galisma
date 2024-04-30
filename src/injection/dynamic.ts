@@ -150,8 +150,9 @@ export const createDynamicSlotsFromPayload = ({
       const divId = `${divIdPrefix}-${j}`;
       const newDiv = document.createElement('div');
       newDiv.id = divId;
-      newDiv.dataset.adsCore = prismaType;
+      newDiv.dataset.adsCore = `{"type": "${prismaType}"}`;
       newDiv.classList.add(injectionClassName);
+      newDiv.classList.add('ads-core-placer');
       selectedDiv.insertAdjacentHTML('afterend', newDiv.outerHTML);
       const createdDiv:HTMLElement = document.getElementById(divId);
       // eslint-disable-next-line max-len
