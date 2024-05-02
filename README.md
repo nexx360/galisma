@@ -18,6 +18,8 @@ The script need to be call on sync mode, and will inject divs accordingly
 type PrismaSlotType = "Banniere-Basse" | "Banniere-Haute" | "Habillage" | "Native" | "Out-Of-Banner" | "Pave-Bas" | "Pave-Bas2" | "Pave-Haut" | "Pave-Haut2" | "Pave-Haut2-Desktop" | "Postitiel"
 
 type InsertAdjacentHTMLPosition = "beforebegin" | "afterbegin" | "beforeend" | "afterend"
+
+type Device: 'mobile' | 'desktop' | 'tablet';
 ```
 
 * InjectedSlot
@@ -48,6 +50,7 @@ type CreateDynamicSlotsPayload = {
   beforeStyle?: string,
   divIdPrefix: string,
   prismaType: PrismaSlotType,
+  device?: Device,
 };
 ```
 
