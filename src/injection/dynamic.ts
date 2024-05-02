@@ -3,6 +3,8 @@ import { PrismaSlotType, prismaSlotType } from '../types/prismaSlotType';
 
 import { createInjectionStyle } from './injectionTools';
 
+export type Device = 'mobile' | 'desktop' | 'tablet';
+
 export type CreateDynamicSlotsPayload = {
   selector: string,
   mainContentSelector: string,
@@ -14,6 +16,7 @@ export type CreateDynamicSlotsPayload = {
   beforeStyle?: string,
   divIdPrefix: string,
   prismaType: PrismaSlotType,
+  device?: Device,
 };
 
 const setInitialOffset = (firstOffsetSelector?:string):number => {
@@ -64,6 +67,7 @@ export const sanitizePayload = (payload:unknown):CreateDynamicSlotsPayload => {
     beforeStyle,
     divIdPrefix,
     prismaType,
+    device,
   } = payload as CreateDynamicSlotsPayload;
   if (typeof selector !== 'string') throw new Error('Selector must be a string');
   if (typeof mainContentSelector !== 'string') throw new Error('Main content selector must be a string');
@@ -75,6 +79,7 @@ export const sanitizePayload = (payload:unknown):CreateDynamicSlotsPayload => {
   if (typeof style !== 'string') throw new Error('Style must be a string');
   if (typeof beforeStyle !== 'string') throw new Error('Before style must be a string');
   if (typeof divIdPrefix !== 'string') throw new Error('Div id prefix must be a string');
+  if (device && !['mobile', 'desktop', 'tablet'].includes(device)) throw new Error('Device must be a string among mobile, desktop, tablet');
   return {
     selector,
     mainContentSelector,
@@ -86,6 +91,7 @@ export const sanitizePayload = (payload:unknown):CreateDynamicSlotsPayload => {
     beforeStyle,
     divIdPrefix,
     prismaType,
+    device,
   };
 };
 
@@ -100,6 +106,7 @@ export const createDynamicSlotsFromPayload = ({
   beforeStyle,
   divIdPrefix,
   prismaType,
+  device,
 }:CreateDynamicSlotsPayload) => {
   /**
    * Wrapper identifier is the name of the div win ('#main for instance')
@@ -147,10 +154,14 @@ export const createDynamicSlotsFromPayload = ({
     const test = bottomDistanceToPageTop > effectiveWindowHeight + distanceToPreviousInsertionBottom;
     if (test) {
       j += 1;
+      const adsCorePayload:{ type: PrismaSlotType, device?: Device } = {
+        type: prismaType,
+      };
+      if (device !== undefined) adsCorePayload.device = device;
       const divId = `${divIdPrefix}-${j}`;
       const newDiv = document.createElement('div');
       newDiv.id = divId;
-      newDiv.dataset.adsCore = `{"type": "${prismaType}"}`;
+      newDiv.dataset.adsCore = `${JSON.stringify(adsCorePayload)}`;
       newDiv.classList.add(injectionClassName);
       newDiv.classList.add('ads-core-placer');
       selectedDiv.insertAdjacentHTML('afterend', newDiv.outerHTML);
